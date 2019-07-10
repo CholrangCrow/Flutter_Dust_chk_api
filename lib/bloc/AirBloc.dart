@@ -5,15 +5,23 @@ import 'package:rxdart/rxdart.dart';
 
 class AirBloc {
   final _airSubject = BehaviorSubject<AirResult>();
+  bool refresh_switch = false;
+  int call_cnt = 0;
 
   AirBloc() {
     fetch();
   }
 
   Future<AirResult> fetchData() async {
+    AirResult result;
     var response = await http.get(
         'http://api.airvisual.com/v2/nearest_city?key=25934421-978b-4c4d-8dce-7c7b108c9800');
-    AirResult result = AirResult.fromJson(json.decode(response.body));
+      print('fetchData 호출 ${response.body}');
+    var jsonData = json.decode(response.body);
+      print('jsonData 호출 ${jsonData['status']}');
+    if (jsonData['status'] == 'success'){
+      result = AirResult.fromJson(jsonData);
+    }
     return result;
   }
 
@@ -24,4 +32,13 @@ class AirBloc {
   }
 
   Stream<AirResult> get airResult$ => _airSubject.stream;
+
+  void refresh() {
+    // if (call_cnt == 0) {
+      print('내부 호출 ${call_cnt}');
+      // refresh_switch = true;
+      // call_cnt++;
+      fetch();
+    // }
+  }
 }

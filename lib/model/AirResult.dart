@@ -115,7 +115,7 @@ class Weather {
     tp = json['tp'];
     pr = json['pr'];
     hu = json['hu'];
-    ws = json['ws'];
+    ws = json['ws'].toDouble();
     wd = json['wd'];
     ic = json['ic'];
   }

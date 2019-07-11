@@ -26,6 +26,9 @@ class Main extends StatefulWidget {
 }
 
 class _MainState extends State<Main> {
+  bool _firstPress = true;
+  String _status = 'false';
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,8 +37,11 @@ class _MainState extends State<Main> {
             stream: airBloc.airResult$,
             builder: (context, snapshot) {
               if (snapshot.hasData) {
+                _firstPress = true;
+                _status = 'success';
                 return buildBody(snapshot.data);
               } else {
+                _status = 'fail';
                 return buildBody_fail();
               }
             }),
@@ -132,18 +138,22 @@ class _MainState extends State<Main> {
   }
 
   Widget refreshBtn() {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(30),
-      child: RaisedButton(
-        padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 50),
-        color: Colors.orange,
-        child: Icon(Icons.refresh, color: Colors.white),
-        onPressed: () {
-          //refresh
-          airBloc.refresh();
-        },
-      ),
-    );
+    return _firstPress == true || _status == 'fail'
+        ? ClipRRect(
+            borderRadius: BorderRadius.circular(30),
+            child: RaisedButton(
+              padding:
+                  const EdgeInsets.symmetric(vertical: 15.0, horizontal: 50),
+              color: Colors.orange,
+              child: Icon(Icons.refresh, color: Colors.white),
+              onPressed: () {
+                //refresh
+                _firstPress = false;
+                airBloc.refresh();
+              },
+            ),
+          )
+        : CircularProgressIndicator();
   }
 
   Color getColor(AirResult result) {

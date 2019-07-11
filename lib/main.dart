@@ -27,7 +27,6 @@ class Main extends StatefulWidget {
 
 class _MainState extends State<Main> {
   bool _firstPress = true;
-  String _status = 'false';
 
   @override
   Widget build(BuildContext context) {
@@ -38,11 +37,9 @@ class _MainState extends State<Main> {
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 _firstPress = true;
-                _status = 'success';
                 return buildBody(snapshot.data);
               } else {
-                _status = 'fail';
-                return buildBody_fail();
+                return buildBodyFail();
               }
             }),
       ),
@@ -121,7 +118,7 @@ class _MainState extends State<Main> {
     );
   }
 
-  Widget buildBody_fail() {
+  Widget buildBodyFail() {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Center(
@@ -130,7 +127,7 @@ class _MainState extends State<Main> {
           children: <Widget>[
             CircularProgressIndicator(),
             SizedBox(height: 16),
-            refreshBtn(),
+            // refreshBtn(),
           ],
         ),
       ),
@@ -138,22 +135,24 @@ class _MainState extends State<Main> {
   }
 
   Widget refreshBtn() {
-    return _firstPress == true || _status == 'fail'
-        ? ClipRRect(
-            borderRadius: BorderRadius.circular(30),
-            child: RaisedButton(
-              padding:
-                  const EdgeInsets.symmetric(vertical: 15.0, horizontal: 50),
-              color: Colors.orange,
-              child: Icon(Icons.refresh, color: Colors.white),
-              onPressed: () {
-                //refresh
-                _firstPress = false;
-                airBloc.refresh();
-              },
-            ),
-          )
-        : CircularProgressIndicator();
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(30),
+      child: RaisedButton(
+        padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 50),
+        color: Colors.orange,
+        child: Icon(Icons.refresh, color: Colors.white),
+        onPressed: () async {
+          if (_firstPress == true) {
+            _firstPress = false;
+            print('first in : ${DateTime.now()}');
+            await new Future.delayed(const Duration(seconds: 3));
+            print('last out : ${DateTime.now()}');
+            //refresh
+            airBloc.refresh();
+          }
+        },
+      ),
+    );
   }
 
   Color getColor(AirResult result) {
